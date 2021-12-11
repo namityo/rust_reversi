@@ -14,33 +14,13 @@ fn main() {
     loop {
         println!("{:?} の番です", piece_type);
 
-        let mut x = String::new();
-        let mut y = String::new();
-        println!("x座標を入力してください");
-        match io::stdin().read_line(&mut x) {
-            Ok(_) => (),
-            Err(error) => println!("error: {}", error),
-        }
-        let x: usize = match x.trim().parse() {
-            Ok(v) => v,
-            Err(_) => {
-                println!("xの値が不正です");
+        let point = match input_xy() {
+            Ok(point) => point,
+            Err(err) => {
+                println!("{}", err);
                 continue;
             },
         };
-        println!("y座標を入力してください");
-        match io::stdin().read_line(&mut y) {
-            Ok(_) => (),
-            Err(error) => println!("error: {}", error),
-        }
-        let y: usize = match y.trim().parse() {
-            Ok(v) => v,
-            Err(_) => {
-                println!("yの値が不正です");
-                continue;
-            }
-        };
-        let point = board::Point::new(x, y);
 
         if board.can_put_piece(piece_type, point) {
             board = board.put_piece(piece_type, point);
@@ -52,4 +32,28 @@ fn main() {
             println!("{:?} には置けません", point);
         }
     }
+}
+
+fn input_xy() -> Result<board::Point, String> {
+    let x = input_axes("x")?;
+    let y = input_axes("y")?;
+    return Ok(board::Point::new(x, y));
+}
+
+fn input_axes(axes: &str) -> Result<usize, String> {
+    println!("{}座標を入力してください", axes);
+
+    let mut val = String::new();
+    match io::stdin().read_line(&mut val) {
+        Ok(_) => (),
+        Err(error) => println!("error: {}", error),
+    }
+    let val: usize = match val.trim().parse() {
+        Ok(v) => v,
+        Err(_) => {
+            return Err(format!("{}の値が不正です", axes));
+        }
+    };
+
+    return Ok(val);
 }
