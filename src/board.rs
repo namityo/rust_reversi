@@ -53,6 +53,29 @@ impl Board {
         return self.is_end_nosquare() || self.is_end_one_color();
     }
 
+    pub fn get_winner(&self) -> Option<PieceType> {
+        // 白または黒一色か？
+        let mut white_count = 0;
+        let mut black_count = 0;
+
+        for (_, tile) in self.tiles.iter() {
+            match tile {
+                TileType::Piece(t) => match t {
+                    PieceType::White => white_count += 1,
+                    PieceType::Black => black_count += 1,
+                },
+                _ => (),
+            }
+        }
+        if white_count > black_count {
+            return Some(PieceType::White);
+        } if white_count < black_count {
+            return Some(PieceType::Black);
+        } else {
+            return None;
+        }
+    }
+
     fn is_end_nosquare(&self) -> bool {
         // 全部埋まっているか？
         for (_, tile) in self.tiles.iter() {
