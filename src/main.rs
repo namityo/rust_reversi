@@ -1,4 +1,4 @@
-use std::io;
+use std::io::{self, Write};
 
 mod board;
 mod tile;
@@ -13,7 +13,6 @@ fn main() {
 
     loop {
         if board.is_end() {
-            println!("ゲーム終了");
             break;
         }
 
@@ -37,6 +36,14 @@ fn main() {
             println!("{:?} には置けません", point);
         }
     }
+
+    println!("ゲーム終了");
+
+    if let Some(piece_type) = board.get_winner() {
+        println!("{:?} の勝利!", piece_type)
+    } else {
+        println!("同点")
+    }
 }
 
 fn input_xy() -> Result<board::Point, String> {
@@ -46,7 +53,8 @@ fn input_xy() -> Result<board::Point, String> {
 }
 
 fn input_axes(axes: &str) -> Result<usize, String> {
-    println!("{}座標を入力してください", axes);
+    print!("{}座標を入力してください : ", axes);
+    io::stdout().flush().unwrap();
 
     let mut val = String::new();
     match io::stdin().read_line(&mut val) {
