@@ -4,6 +4,15 @@ pub enum PieceType {
     White,
 }
 
+impl PieceType {
+    pub fn change(self) -> PieceType {
+        return match self {
+            PieceType::Black => PieceType::White,
+            PieceType::White => PieceType::Black,
+        };
+    }
+}
+
 #[derive(Debug)]
 pub enum TileType {
     Piece(PieceType),
