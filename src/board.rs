@@ -359,7 +359,7 @@ mod tests {
     use crate::tile::PieceType;
 
     #[test]
-    fn test_is_skip() {
+    fn test_ok_is_skip() {
         let mut board = Board::new(8, 8);
 
         //  |0|1|2|3|4|5|6|7|8|9|
@@ -386,5 +386,25 @@ mod tests {
 
         // 白は置けない
         assert_eq!(board.is_skip(PieceType::White), true);
+    }
+
+    #[test]
+    fn test_ng_is_skip() {
+        let board = Board::new(8, 8);
+
+        //  |0|1|2|3|4|5|6|7|8|9|
+        // 0|×|×|×|×|×|×|×|×|×|×|
+        // 1|×| | | | | | | | |×|
+        // 2|×| | | | | | | | |×|
+        // 3|×| | | | | | | | |×|
+        // 4|×| | | |○|●| | | |×|
+        // 5|×| | | |●|○| | | |×|
+        // 6|×| | | | | | | | |×|
+        // 7|×| | | | | | | | |×|
+        // 8|×| | | | | | | | |×|
+        // 9|×|×|×|×|×|×|×|×|×|×|
+
+        // 白は置ける
+        assert_eq!(board.is_skip(PieceType::White), false);
     }
 }
