@@ -197,12 +197,6 @@ impl Board {
         return board;
     }
 
-    pub fn put_debug_piece(self, piece_type: PieceType, point: Point) -> Board {
-        let mut board = self;
-        board.tiles.insert(point, TileType::Piece(piece_type));
-        return board;
-    }
-
     fn is_square(&self, x: usize, y: usize) -> bool {
         return match self.get_tile((x, y)) {
             Some(tile) => match tile {
@@ -354,5 +348,43 @@ impl XYPoint<(isize, isize)> for Board {
 impl XYPoint<(usize, usize)> for Board {
     fn get_tile(&self, (x, y): (usize, usize)) -> Option<&TileType> {
         return self.tiles.get(&Point::new(x, y));
+    }
+}
+
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::tile::PieceType;
+
+    #[test]
+    fn test_is_skip() {
+        let mut board = Board::new(8, 8);
+
+        //  |0|1|2|3|4|5|6|7|8|9|
+        // 0|×|×|×|×|×|×|×|×|×|×|
+        // 1|×| | | | |●|●|●|●|×|
+        // 2|×| | | | |●|●|●|●|×|
+        // 3|×| | | | |●|●|●|●|×|
+        // 4|×| | | |○|●|●|●|●|×|
+        // 5|×| | | |●|●|●|●|●|×|
+        // 6|×| | | |●|●|●|●|●|×|
+        // 7|×| | | |●|●|●|●|●|×|
+        // 8|×| | | |●|●|●|●|●|×|
+        // 9|×|×|×|×|×|×|×|×|×|×|
+
+        board.tiles.insert(Point::new(4, 5), TileType::Piece(PieceType::Black));
+        board.tiles.insert(Point::new(4, 6), TileType::Piece(PieceType::Black));
+        board.tiles.insert(Point::new(4, 7), TileType::Piece(PieceType::Black));
+        board.tiles.insert(Point::new(4, 8), TileType::Piece(PieceType::Black));
+        for x in 5..=8 {
+            for y in 1..=8 {
+                board.tiles.insert(Point::new(x, y), TileType::Piece(PieceType::Black));
+            }
+        }
+
+        // 白は置けない
+        assert_eq!(board.is_skip(PieceType::White), true);
     }
 }
