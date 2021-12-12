@@ -6,7 +6,7 @@ mod tile;
 fn main() {
     let mut board = board::Board::new(8, 8);
 
-    let mut piece_type = tile::PieceType::Black;
+    let mut piece_type = tile::PieceType::White;
 
     // 画面表示
     board.print();
@@ -14,6 +14,11 @@ fn main() {
     loop {
         if board.is_end() {
             break;
+        }
+
+        if board.is_skip(piece_type) {
+            println!("{:?} の打てる場所がありません", piece_type);
+            piece_type = piece_type.change();
         }
 
         println!("{:?} の番です", piece_type);
@@ -26,7 +31,7 @@ fn main() {
             },
         };
 
-        if board.can_put_piece(piece_type, point) {
+        if board.can_put_piece(piece_type, &point) {
             board = board.put_piece(piece_type, point);
             piece_type = piece_type.change();
 
