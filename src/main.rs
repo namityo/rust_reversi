@@ -6,7 +6,7 @@ mod tile;
 fn main() {
     let mut board = board::Board::new(8, 8);
 
-    let mut piece_type = tile::PieceType::White;
+    let mut piece_type = tile::PieceType::Black;
 
     // 画面表示
     board.print();

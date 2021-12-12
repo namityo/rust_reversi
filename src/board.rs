@@ -143,10 +143,10 @@ impl Board {
         // 中心に白と黒を配置
         let x_center = x_size / 2;
         let y_center = y_size / 2;
-        tiles.insert(Point::new(x_center, y_center), TileType::Piece(PieceType::Black));
-        tiles.insert(Point::new(x_center + 1, y_center), TileType::Piece(PieceType::White));
-        tiles.insert(Point::new(x_center, y_center + 1), TileType::Piece(PieceType::White));
-        tiles.insert(Point::new(x_center + 1, y_center + 1), TileType::Piece(PieceType::Black));
+        tiles.insert(Point::new(x_center, y_center), TileType::Piece(PieceType::White));
+        tiles.insert(Point::new(x_center + 1, y_center), TileType::Piece(PieceType::Black));
+        tiles.insert(Point::new(x_center, y_center + 1), TileType::Piece(PieceType::Black));
+        tiles.insert(Point::new(x_center + 1, y_center + 1), TileType::Piece(PieceType::White));
 
         return tiles;
     }
