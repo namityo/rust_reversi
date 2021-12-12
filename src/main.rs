@@ -16,6 +16,11 @@ fn main() {
             break;
         }
 
+        if board.is_skip(piece_type) {
+            println!("{:?} の打てる場所がありません", piece_type);
+            piece_type = piece_type.change();
+        }
+
         println!("{:?} の番です", piece_type);
 
         let point = match input_xy() {
@@ -26,7 +31,7 @@ fn main() {
             },
         };
 
-        if board.can_put_piece(piece_type, point) {
+        if board.can_put_piece(piece_type, &point) {
             board = board.put_piece(piece_type, point);
             piece_type = piece_type.change();
 

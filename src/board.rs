@@ -76,6 +76,17 @@ impl Board {
         }
     }
 
+    pub fn is_skip(&self, piece_type: PieceType) -> bool {
+        for (point, _) in self.tiles.iter() {
+            if self.can_put_piece(piece_type, point) {
+                return false;
+            }
+        }
+
+        // 置ける場所が無い場合
+        return true;
+    }
+
     fn is_end_nosquare(&self) -> bool {
         // 全部埋まっているか？
         for (_, tile) in self.tiles.iter() {
@@ -132,15 +143,15 @@ impl Board {
         // 中心に白と黒を配置
         let x_center = x_size / 2;
         let y_center = y_size / 2;
-        tiles.insert(Point::new(x_center, y_center), TileType::Piece(PieceType::Black));
-        tiles.insert(Point::new(x_center + 1, y_center), TileType::Piece(PieceType::White));
-        tiles.insert(Point::new(x_center, y_center + 1), TileType::Piece(PieceType::White));
-        tiles.insert(Point::new(x_center + 1, y_center + 1), TileType::Piece(PieceType::Black));
+        tiles.insert(Point::new(x_center, y_center), TileType::Piece(PieceType::White));
+        tiles.insert(Point::new(x_center + 1, y_center), TileType::Piece(PieceType::Black));
+        tiles.insert(Point::new(x_center, y_center + 1), TileType::Piece(PieceType::Black));
+        tiles.insert(Point::new(x_center + 1, y_center + 1), TileType::Piece(PieceType::White));
 
         return tiles;
     }
 
-    pub fn can_put_piece(&self, piece_type: PieceType, point: Point) -> bool {
+    pub fn can_put_piece(&self, piece_type: PieceType, point: &Point) -> bool {
         // 置こうとした場所は有効な場所か？
         return if self.is_square(point.x, point.y) {
             // 隣接してない所は置けない
@@ -183,6 +194,12 @@ impl Board {
             }
         }
 
+        return board;
+    }
+
+    pub fn put_debug_piece(self, piece_type: PieceType, point: Point) -> Board {
+        let mut board = self;
+        board.tiles.insert(point, TileType::Piece(piece_type));
         return board;
     }
 
