@@ -17,11 +17,11 @@ fn main() {
         }
 
         if board.is_skip(piece_type) {
-            println!("{:?} の打てる場所がありません", piece_type);
+            println!("{} の打てる場所がありません", piece_type);
             piece_type = piece_type.change();
         }
 
-        println!("{:?} の番です", piece_type);
+        println!("{} の番です", piece_type);
 
         let point = match input_xy() {
             Ok(point) => point,
@@ -35,17 +35,17 @@ fn main() {
             board = board.put_piece(piece_type, point);
             piece_type = piece_type.change();
 
-            println!("{:?} に置きました", point);
+            println!("{} に置きました", point);
             board.print();
         } else {
-            println!("{:?} には置けません", point);
+            println!("{} には置けません", point);
         }
     }
 
     println!("ゲーム終了");
 
     if let Some(piece_type) = board.get_winner() {
-        println!("{:?} の勝利!", piece_type)
+        println!("{} の勝利!", piece_type)
     } else {
         println!("同点")
     }

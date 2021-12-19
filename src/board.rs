@@ -1,6 +1,7 @@
 use crate::tile::TileType;
 use crate::tile::PieceType;
 use std::collections::HashMap;
+use std::fmt;
 
 pub struct Board {
     tiles: HashMap<Point, TileType>,
@@ -8,7 +9,7 @@ pub struct Board {
     y_size: usize,
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Point {
     x: usize,
     y: usize,
@@ -20,6 +21,12 @@ impl Point {
             x,
             y,
         }
+    }
+}
+
+impl fmt::Display for Point {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        return write!(f, "座標:{},{}", self.x, self.y);
     }
 }
 
