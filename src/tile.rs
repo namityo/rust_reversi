@@ -1,3 +1,5 @@
+use std::fmt;
+
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub enum PieceType {
     Black,
@@ -20,15 +22,16 @@ pub enum TileType {
     None,
 }
 
-impl TileType {
-    pub fn to_string(&self) -> &str {
-        match self {
+impl fmt::Display for TileType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let str = match self {
             TileType::Piece(t) => match t {
                 PieceType::Black => "●",
                 PieceType::White => "○",
             },
             TileType::Square => " ",
             TileType::None => "×",
-        }
+        };
+        return write!(f, "{}", str);
     }
 }

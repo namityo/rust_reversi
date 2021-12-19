@@ -25,13 +25,11 @@ impl Point {
 
 impl Board {
     pub fn new(x_size: usize, y_size: usize) -> Board {
-        let board = Board {
+        return Board {
             tiles: Board::initialize_tiles(x_size, y_size),
             x_size,
             y_size,
         };
-
-        return board;
     }
 
     pub fn print(&self) {
@@ -40,7 +38,7 @@ impl Board {
             print!("{}|", y);
             for x in 0..=(self.x_size + 1) {
                 if let Some(tile) = self.tiles.get(&Point::new(x, y)) {
-                    print!("{}|", tile.to_string());
+                    print!("{}|", tile);
                 } else {
                     print!("?");
                 }
