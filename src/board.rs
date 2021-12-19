@@ -407,4 +407,33 @@ mod tests {
         // 白は置ける
         assert_eq!(board.is_skip(PieceType::White), false);
     }
+
+    #[test]
+    fn test_can_put_piece() {
+        let board = Board::new(8, 8);
+
+        //  |0|1|2|3|4|5|6|7|8|9|
+        // 0|×|×|×|×|×|×|×|×|×|×|
+        // 1|×| | | | | | | | |×|
+        // 2|×| | | | | | | | |×|
+        // 3|×| | | | | | | | |×|
+        // 4|×| | | |○|●| | | |×|
+        // 5|×| | | |●|○| | | |×|
+        // 6|×| | | | | | | | |×|
+        // 7|×| | | | | | | | |×|
+        // 8|×| | | | | | | | |×|
+        // 9|×|×|×|×|×|×|×|×|×|×|
+
+        // 1,1 に白も黒も置けない
+        assert_eq!(board.can_put_piece(PieceType::White, &Point::new(1, 1)), false);
+        assert_eq!(board.can_put_piece(PieceType::Black, &Point::new(1, 1)), false);
+
+        // 3,4 に白は置けない、黒は置ける
+        assert_eq!(board.can_put_piece(PieceType::White, &Point::new(3, 4)), false);
+        assert_eq!(board.can_put_piece(PieceType::Black, &Point::new(3, 4)), true);
+
+        // 5,3 に白は置ける、黒は置けない
+        assert_eq!(board.can_put_piece(PieceType::White, &Point::new(5, 3)), true);
+        assert_eq!(board.can_put_piece(PieceType::Black, &Point::new(5, 3)), false);
+    }
 }
