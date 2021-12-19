@@ -153,7 +153,7 @@ impl Board {
 
     pub fn can_put_piece(&self, piece_type: PieceType, point: &Point) -> bool {
         // 置こうとした場所は有効な場所か？
-        return if self.is_square(point.x, point.y) {
+        return if self.is_square(point) {
             // 隣接してない所は置けない
             if self.is_next_to_piece(point.x, point.y) {
                 // 返せない所は置けない
@@ -172,7 +172,7 @@ impl Board {
 
     pub fn put_piece(self, piece_type: PieceType, point: Point) -> Board {
         // 置こうとした場所は有効な場所か？
-        let lines = if self.is_square(point.x, point.y) {
+        let lines = if self.is_square(&point) {
             if self.is_next_to_piece(point.x, point.y) {
                 self.can_change_piece_line(piece_type, point.x, point.y)
             } else {
@@ -197,8 +197,8 @@ impl Board {
         return board;
     }
 
-    fn is_square(&self, x: usize, y: usize) -> bool {
-        return match self.get_tile((x, y)) {
+    fn is_square(&self, point: &Point) -> bool {
+        return match self.get_tile(point) {
             Some(tile) => match tile {
                 TileType::Square => true,
                 _ => false,
@@ -406,5 +406,34 @@ mod tests {
 
         // 白は置ける
         assert_eq!(board.is_skip(PieceType::White), false);
+    }
+
+    #[test]
+    fn test_can_put_piece() {
+        let board = Board::new(8, 8);
+
+        //  |0|1|2|3|4|5|6|7|8|9|
+        // 0|×|×|×|×|×|×|×|×|×|×|
+        // 1|×| | | | | | | | |×|
+        // 2|×| | | | | | | | |×|
+        // 3|×| | | | | | | | |×|
+        // 4|×| | | |○|●| | | |×|
+        // 5|×| | | |●|○| | | |×|
+        // 6|×| | | | | | | | |×|
+        // 7|×| | | | | | | | |×|
+        // 8|×| | | | | | | | |×|
+        // 9|×|×|×|×|×|×|×|×|×|×|
+
+        // 1,1 に白も黒も置けない
+        assert_eq!(board.can_put_piece(PieceType::White, &Point::new(1, 1)), false);
+        assert_eq!(board.can_put_piece(PieceType::Black, &Point::new(1, 1)), false);
+
+        // 3,4 に白は置けない、黒は置ける
+        assert_eq!(board.can_put_piece(PieceType::White, &Point::new(3, 4)), false);
+        assert_eq!(board.can_put_piece(PieceType::Black, &Point::new(3, 4)), true);
+
+        // 5,3 に白は置ける、黒は置けない
+        assert_eq!(board.can_put_piece(PieceType::White, &Point::new(5, 3)), true);
+        assert_eq!(board.can_put_piece(PieceType::Black, &Point::new(5, 3)), false);
     }
 }
