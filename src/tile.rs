@@ -1,6 +1,6 @@
 use std::fmt;
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Debug)]
 pub enum PieceType {
     Black,
     White,
@@ -25,6 +25,7 @@ impl fmt::Display for PieceType {
     }
 }
 
+#[derive(Clone, Copy, PartialEq)]
 pub enum TileType {
     Piece(PieceType),
     Square,

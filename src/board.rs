@@ -65,10 +65,8 @@ impl Board {
 
         for (_, tile) in self.tiles.iter() {
             match tile {
-                TileType::Piece(t) => match t {
-                    PieceType::White => white_count += 1,
-                    PieceType::Black => black_count += 1,
-                },
+                TileType::Piece(PieceType::White) => white_count += 1,
+                TileType::Piece(PieceType::Black) => black_count += 1,
                 _ => (),
             }
         }
@@ -94,14 +92,8 @@ impl Board {
 
     fn is_end_nosquare(&self) -> bool {
         // 全部埋まっているか？
-        for (_, tile) in self.tiles.iter() {
-            match tile {
-                TileType::Square => return false,
-                _ => (),
-            }
-        }
-
-        return true;
+        // つまり、Pieceを置けるSquareが存在していない場合trueを返す。
+        return !self.tiles.iter().any(|(_, &t)| t == TileType::Square);
     }
 
     fn is_end_one_color(&self) -> bool {
@@ -111,10 +103,8 @@ impl Board {
 
         for (_, tile) in self.tiles.iter() {
             match tile {
-                TileType::Piece(t) => match t {
-                    PieceType::White => white_count += 1,
-                    PieceType::Black => black_count += 1,
-                },
+                TileType::Piece(PieceType::White) => white_count += 1,
+                TileType::Piece(PieceType::Black) => black_count += 1,
                 _ => (),
             }
             if (white_count != 0) && (black_count != 0) {
@@ -204,10 +194,7 @@ impl Board {
 
     fn is_square(&self, point: &Point) -> bool {
         return match self.get_tile(point) {
-            Some(tile) => match tile {
-                TileType::Square => true,
-                _ => false,
-            },
+            Some(TileType::Square) => true,
             _ => false,
         };
     }
@@ -219,19 +206,8 @@ impl Board {
             self.get_tile((x - 1, y + 1)), self.get_tile((x, y + 1)), self.get_tile((x + 1, y + 1)),
             ];
 
-        for t in target {
-            match t {
-                Some(tile) => {
-                    match tile {
-                        TileType::Piece(_) => return true,
-                        _ => (),
-                    }
-                },
-                _ => (),
-            }
-        }
-
-        return false;
+        // 隣接する場所に駒があるか
+        return target.iter().any(|t| if let Some(TileType::Piece(_)) = t {true} else {false});
     }
 
     fn can_change_piece_line(&self, piece_type: PieceType, x: usize, y: usize) -> Vec<Vec<(Point, PieceType)>> {
@@ -263,13 +239,7 @@ impl Board {
             let tile = self.get_tile((xt, yt));
 
             match tile {
-                Some(tile) => match tile {
-                    TileType::Piece(piece_type) => match piece_type {
-                        PieceType::Black => result.push((Point::new(xt as usize, yt as usize), PieceType::Black)),
-                        PieceType::White => result.push((Point::new(xt as usize, yt as usize), PieceType::White)),
-                    },
-                    _ => break,
-                },
+                Some(TileType::Piece(piece_type)) => result.push((Point::new(xt as usize, yt as usize), *piece_type)),
                 _ => break,
             }
             index += 1;
@@ -440,5 +410,196 @@ mod tests {
         // 5,3 に白は置ける、黒は置けない
         assert_eq!(board.can_put_piece(PieceType::White, &Point::new(5, 3)), true);
         assert_eq!(board.can_put_piece(PieceType::Black, &Point::new(5, 3)), false);
+    }
+
+    #[test]
+    fn test_get_winner_none() {
+        let board = Board::new(8, 8);
+
+        //  |0|1|2|3|4|5|6|7|8|9|
+        // 0|×|×|×|×|×|×|×|×|×|×|
+        // 1|×| | | | | | | | |×|
+        // 2|×| | | | | | | | |×|
+        // 3|×| | | | | | | | |×|
+        // 4|×| | | |○|●| | | |×|
+        // 5|×| | | |●|○| | | |×|
+        // 6|×| | | | | | | | |×|
+        // 7|×| | | | | | | | |×|
+        // 8|×| | | | | | | | |×|
+        // 9|×|×|×|×|×|×|×|×|×|×|
+
+        // 同枚数は勝者なし
+        assert_eq!(None, board.get_winner());
+    }
+
+    #[test]
+    fn test_get_winner_white() {
+        let mut board = Board::new(8, 8);
+        board.tiles.insert(Point::new(4, 6), TileType::Piece(PieceType::White));
+
+        //  |0|1|2|3|4|5|6|7|8|9|
+        // 0|×|×|×|×|×|×|×|×|×|×|
+        // 1|×| | | | | | | | |×|
+        // 2|×| | | | | | | | |×|
+        // 3|×| | | | | | | | |×|
+        // 4|×| | | |○|●| | | |×|
+        // 5|×| | | |●|○| | | |×|
+        // 6|×| | | |○| | | | |×|
+        // 7|×| | | | | | | | |×|
+        // 8|×| | | | | | | | |×|
+        // 9|×|×|×|×|×|×|×|×|×|×|
+
+        // 白の勝ち
+        assert_eq!(PieceType::White, board.get_winner().unwrap());
+    }
+
+    #[test]
+    fn test_get_winner_black() {
+        let mut board = Board::new(8, 8);
+        board.tiles.insert(Point::new(4, 6), TileType::Piece(PieceType::Black));
+        
+        //  |0|1|2|3|4|5|6|7|8|9|
+        // 0|×|×|×|×|×|×|×|×|×|×|
+        // 1|×| | | | | | | | |×|
+        // 2|×| | | | | | | | |×|
+        // 3|×| | | | | | | | |×|
+        // 4|×| | | |○|●| | | |×|
+        // 5|×| | | |●|○| | | |×|
+        // 6|×| | | |●| | | | |×|
+        // 7|×| | | | | | | | |×|
+        // 8|×| | | | | | | | |×|
+        // 9|×|×|×|×|×|×|×|×|×|×|
+
+        // 白の勝ち
+        assert_eq!(PieceType::Black, board.get_winner().unwrap());
+    }
+
+    #[test]
+    fn test_is_end_nosquare_true() {
+        let mut board = Board::new(8, 8);
+
+        //  |0|1|2|3|4|5|6|7|8|9|
+        // 0|×|×|×|×|×|×|×|×|×|×|
+        // 1|×|●|●|●|●|●|●|●|●|×|
+        // 2|×|●|●|●|●|●|●|●|●|×|
+        // 3|×|●|●|●|●|●|●|●|●|×|
+        // 4|×|●|●|●|●|●|●|●|●|×|
+        // 5|×|●|●|●|●|●|●|●|●|×|
+        // 6|×|●|●|●|●|●|●|●|●|×|
+        // 7|×|●|●|●|●|●|●|●|●|×|
+        // 8|×|●|●|●|●|●|●|●|●|×|
+        // 9|×|×|×|×|×|×|×|×|×|×|
+
+        for x in 1..=8 {
+            for y in 1..=8 {
+                board.tiles.insert(Point::new(x, y), TileType::Piece(PieceType::Black));
+            }
+        }
+
+        // タイルが無い
+        assert_eq!(true, board.is_end_nosquare());
+    }
+
+    #[test]
+    fn test_is_end_nosquare_false() {
+        let mut board = Board::new(8, 8);
+
+        //  |0|1|2|3|4|5|6|7|8|9|
+        // 0|×|×|×|×|×|×|×|×|×|×|
+        // 1|×|●|●|●|●|●|●|●|●|×|
+        // 2|×|●|●|●|●|●|●|●|●|×|
+        // 3|×|●|●|●|●|●|●|●|●|×|
+        // 4|×|●|●|●|●|●|●|●|●|×|
+        // 5|×|●|●|●|●|●|●|●|●|×|
+        // 6|×|●|●|●|●|●|●|●|●|×|
+        // 7|×|●|●|●|●|●|●|●|●|×|
+        // 8|×|●|●|●|●|●|●|●|●|×|
+        // 9|×|×|×|×|×|×|×|×|×|×|
+
+        for x in 1..=8 {
+            for y in 1..=8 {
+                board.tiles.insert(Point::new(x, y), TileType::Piece(PieceType::Black));
+            }
+        }
+        board.tiles.insert(Point::new(1, 1), TileType::Square);
+
+        // タイルが無い
+        assert_eq!(false, board.is_end_nosquare());
+    }
+
+    #[test]
+    fn test_is_end_one_color_true() {
+        let mut board = Board::new(8, 8);
+        
+        //  |0|1|2|3|4|5|6|7|8|9|
+        // 0|×|×|×|×|×|×|×|×|×|×|
+        // 1|×| | | | | | | | |×|
+        // 2|×| | | | | | | | |×|
+        // 3|×| | | | | | | | |×|
+        // 4|×| | | |●|●| | | |×|
+        // 5|×| | | |●|●| | | |×|
+        // 6|×| | | | | | | | |×|
+        // 7|×| | | | | | | | |×|
+        // 8|×| | | | | | | | |×|
+        // 9|×|×|×|×|×|×|×|×|×|×|
+
+        // 黒一色
+        board.tiles.insert(Point::new(4, 4), TileType::Piece(PieceType::Black));
+        board.tiles.insert(Point::new(5, 5), TileType::Piece(PieceType::Black));
+        assert_eq!(true, board.is_end_one_color());
+
+        // 白一色
+        board.tiles.insert(Point::new(4, 4), TileType::Piece(PieceType::White));
+        board.tiles.insert(Point::new(4, 5), TileType::Piece(PieceType::White));
+        board.tiles.insert(Point::new(5, 4), TileType::Piece(PieceType::White));
+        board.tiles.insert(Point::new(5, 5), TileType::Piece(PieceType::White));
+        assert_eq!(true, board.is_end_one_color());
+    }
+
+    #[test]
+    fn test_is_end_one_color_false() {
+        let mut board = Board::new(8, 8);
+        board.tiles.insert(Point::new(5, 5), TileType::Piece(PieceType::Black));
+        
+        //  |0|1|2|3|4|5|6|7|8|9|
+        // 0|×|×|×|×|×|×|×|×|×|×|
+        // 1|×| | | | | | | | |×|
+        // 2|×| | | | | | | | |×|
+        // 3|×| | | | | | | | |×|
+        // 4|×| | | |○|●| | | |×|
+        // 5|×| | | |●|●| | | |×|
+        // 6|×| | | | | | | | |×|
+        // 7|×| | | | | | | | |×|
+        // 8|×| | | | | | | | |×|
+        // 9|×|×|×|×|×|×|×|×|×|×|
+
+        // どちらか一色でもない
+        assert_eq!(false, board.is_end_one_color());
+    }
+
+    #[test]
+    fn test_is_next_to_piece() {
+        let mut board = Board::new(8, 8);
+
+        assert_eq!(false, board.is_next_to_piece(2, 4));
+        assert_eq!(true, board.is_next_to_piece(3, 4));
+        
+        board.tiles.insert(Point::new(3, 4), TileType::Piece(PieceType::White));
+        
+        assert_eq!(false, board.is_next_to_piece(1, 4));
+        assert_eq!(true, board.is_next_to_piece(2, 4));
+    }
+
+    #[test]
+    fn test_can_change_piece_line() {
+        let board = Board::new(8, 8);
+
+        assert_eq!(false, board.can_change_piece_line(PieceType::Black, 2, 4).len() > 0);
+        assert_eq!(true, board.can_change_piece_line(PieceType::Black, 3, 4).len() > 0);
+
+        let board = board.put_piece(PieceType::Black, Point::new(3, 4));
+
+        assert_eq!(false, board.can_change_piece_line(PieceType::White, 3, 2).len() > 0);
+        assert_eq!(true, board.can_change_piece_line(PieceType::White, 3, 3).len() > 0);
     }
 }
