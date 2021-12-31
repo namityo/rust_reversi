@@ -1,7 +1,8 @@
 use std::io::{self, Write};
 
-mod board;
-mod tile;
+extern crate rust_reversi;
+use rust_reversi::board;
+use rust_reversi::tile;
 
 fn main() {
     let mut board = board::Board::new(8, 8);
