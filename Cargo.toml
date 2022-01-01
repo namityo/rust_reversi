@@ -4,6 +4,7 @@ license = "MIT"
 version = "0.1.0"
 authors = ["namityo <namityo@hotmail.com>"]
 description = "Reversi in Rust language."
+repository = "https://github.com/namityo/rust_reversi"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
