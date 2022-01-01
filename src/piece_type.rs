@@ -1,5 +1,7 @@
 use std::fmt;
 
+/// オセロの駒の種類
+/// 
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub enum PieceType {
     Black,
