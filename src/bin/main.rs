@@ -1,13 +1,14 @@
 use std::io::{self, Write};
 
 extern crate rust_reversi;
-use rust_reversi::board;
-use rust_reversi::tile;
+use rust_reversi::board::Board;
+use rust_reversi::piece_type::PieceType;
+use rust_reversi::point::Point;
 
 fn main() {
-    let mut board = board::Board::new(8, 8);
+    let mut board = Board::new(8, 8);
 
-    let mut piece_type = tile::PieceType::Black;
+    let mut piece_type = PieceType::Black;
 
     // 画面表示
     board.print();
@@ -52,10 +53,10 @@ fn main() {
     }
 }
 
-fn input_xy() -> Result<board::Point, String> {
+fn input_xy() -> Result<Point, String> {
     let x = input_axes("x")?;
     let y = input_axes("y")?;
-    Ok(board::Point::new(x, y))
+    Ok(Point::new(x, y))
 }
 
 fn input_axes(axes: &str) -> Result<usize, String> {
