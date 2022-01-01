@@ -1,5 +1,7 @@
 use std::fmt;
 
+/// x座標とy座標を保持するPoint構造体
+/// 
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Point {
     pub x: usize,

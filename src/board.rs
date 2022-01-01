@@ -4,6 +4,10 @@ use crate::piece_type::PieceType;
 use crate::tile::Tile;
 use std::cmp::Ordering;
 
+/// # Board 構造体
+/// 
+/// オセロの盤面を表している構造体
+/// 
 pub struct Board {
     tiles: Tile,
     x_size: usize,
@@ -11,6 +15,8 @@ pub struct Board {
 }
 
 impl Board {
+    /// 新しく盤面を生成します。`x_size`と`y_size`は通常8を指定します。
+    /// 
     pub fn new(x_size: usize, y_size: usize) -> Board {
         Board {
             tiles: Tile::new(x_size, y_size),
@@ -19,6 +25,8 @@ impl Board {
         }
     }
 
+    /// コンソール画面に盤面を表示します。
+    /// 
     pub fn print(&self) {
         println!(" |0|1|2|3|4|5|6|7|8|9|");
         for y in 0..=(self.y_size + 1) {
@@ -34,10 +42,16 @@ impl Board {
         }
     }
 
+    /// ゲームが終了しているか判定します。
+    /// ゲームが終了していたらtrueを返します。
+    /// 
     pub fn is_end(&self) -> bool {
         self.is_end_nosquare() || self.is_end_one_color()
     }
 
+    /// ゲームの勝者を返却します。
+    /// ゲームが終了していない場合はNoneが返却されます。
+    /// 
     pub fn get_winner(&self) -> Option<PieceType> {
         // 白または黒一色か？
         let mut white_count = 0;
@@ -58,6 +72,8 @@ impl Board {
         }
     }
 
+    /// 駒が打てない場合にtrueを返します。
+    /// 
     pub fn is_skip(&self, piece_type: PieceType) -> bool {
         let mut result = true;
 
@@ -97,6 +113,9 @@ impl Board {
         true
     }
 
+    /// 置こうとした場所に駒が置けるか判定します。
+    /// `Point`構造体の位置に駒が置ける場合はtrueを返します。
+    /// 
     pub fn can_put_piece(&self, piece_type: PieceType, point: &Point) -> bool {
         // 置こうとした場所は有効な場所か？
         if self.is_square(point) {
@@ -113,6 +132,9 @@ impl Board {
         }
     }
 
+    /// 駒を置きます。
+    /// 置いたコマによって既に置かれた駒が変わるため、新しい`Board`構造体が返却されます。
+    /// 
     pub fn put_piece(self, piece_type: PieceType, point: Point) -> Board {
         // 置こうとした場所は有効な場所か？
         let lines = if self.is_square(&point) {
