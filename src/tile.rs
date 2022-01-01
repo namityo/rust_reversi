@@ -8,10 +8,10 @@ pub enum PieceType {
 
 impl PieceType {
     pub fn change(self) -> PieceType {
-        return match self {
+        match self {
             PieceType::Black => PieceType::White,
             PieceType::White => PieceType::Black,
-        };
+        }
     }
 }
 
@@ -21,7 +21,7 @@ impl fmt::Display for PieceType {
             PieceType::Black => "●",
             PieceType::White => "○",
         };
-        return write!(f, "{}", str);
+        write!(f, "{}", str)
     }
 }
 
@@ -36,8 +36,8 @@ impl fmt::Display for TileType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             TileType::Piece(t) => write!(f, "{}", t),
-            TileType::Square => write!(f, "{}", " "),
-            TileType::None => write!(f, "{}", "×"),
+            TileType::Square => write!(f, " "),
+            TileType::None => write!(f, "×"),
         }
     }
 }

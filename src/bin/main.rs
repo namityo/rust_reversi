@@ -55,7 +55,7 @@ fn main() {
 fn input_xy() -> Result<board::Point, String> {
     let x = input_axes("x")?;
     let y = input_axes("y")?;
-    return Ok(board::Point::new(x, y));
+    Ok(board::Point::new(x, y))
 }
 
 fn input_axes(axes: &str) -> Result<usize, String> {
@@ -74,5 +74,5 @@ fn input_axes(axes: &str) -> Result<usize, String> {
         }
     };
 
-    return Ok(val);
+    Ok(val)
 }
